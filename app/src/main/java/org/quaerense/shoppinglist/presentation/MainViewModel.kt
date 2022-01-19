@@ -1,7 +1,6 @@
 package org.quaerense.shoppinglist.presentation
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import org.quaerense.shoppinglist.data.ShopListRepositoryImpl
 import org.quaerense.shoppinglist.domain.DeleteShopItemUseCase
