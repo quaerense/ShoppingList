@@ -1,27 +1,29 @@
 package org.quaerense.shoppinglist.presentation
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import org.quaerense.shoppinglist.R
+import org.quaerense.shoppinglist.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var viewModel: MainViewModel
+    private lateinit var adapter: ShopListAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        var count = 0
-
-        val viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        setupRecyclerView()
+        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.shopList.observe(this) {
-            Log.d("TestViewModel", it.toString())
-
-            if (count == 0) {
-                val item = it[0]
-                viewModel.changeEnableState(item)
-                count++
-            }
+            adapter.shopItems = it
         }
+    }
+
+    private fun setupRecyclerView() {
+        adapter = ShopListAdapter()
+        binding.rvShopList.adapter = adapter
     }
 }
