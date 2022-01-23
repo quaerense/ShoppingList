@@ -1,12 +1,13 @@
 package org.quaerense.shoppinglist.presentation
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import org.quaerense.shoppinglist.databinding.ActivityMainBinding
+import org.quaerense.shoppinglist.presentation.ShopItemActivity.Companion.newIntentAddItem
+import org.quaerense.shoppinglist.presentation.ShopItemActivity.Companion.newIntentEditItem
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -22,6 +23,11 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         viewModel.shopList.observe(this) {
             shopListAdapter.submitList(it)
+        }
+
+        binding.buttonAddShopItem.setOnClickListener {
+            val intent = newIntentAddItem(this)
+            startActivity(intent)
         }
     }
 
@@ -69,15 +75,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupClickListener() {
-        shopListAdapter.onShopItemLongClickListener = {
-            viewModel.changeEnableState(it)
+        shopListAdapter.onShopItemClickListener = {
+            val intent = newIntentEditItem(this, it.id)
+            startActivity(intent)
         }
     }
 
     private fun setupLongClickListener() {
-        shopListAdapter.onShopItemClickListener = {
-            Toast.makeText(this, "Hello from ${it.id} shop item!", Toast.LENGTH_SHORT)
-                .show()
+        shopListAdapter.onShopItemLongClickListener = {
+            viewModel.changeEnableState(it)
         }
     }
 }
