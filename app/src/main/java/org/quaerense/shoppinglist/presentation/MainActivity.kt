@@ -2,9 +2,11 @@ package org.quaerense.shoppinglist.presentation
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import org.quaerense.shoppinglist.R
 import org.quaerense.shoppinglist.databinding.ActivityMainBinding
 import org.quaerense.shoppinglist.presentation.ShopItemActivity.Companion.newIntentAddItem
 import org.quaerense.shoppinglist.presentation.ShopItemActivity.Companion.newIntentEditItem
@@ -26,9 +28,25 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.buttonAddShopItem.setOnClickListener {
-            val intent = newIntentAddItem(this)
-            startActivity(intent)
+            if (isOnePaneMode()) {
+                val intent = newIntentAddItem(this)
+                startActivity(intent)
+            } else {
+                launchFragment(ShopItemFragment.newInstanceAddItem())
+            }
         }
+    }
+
+    private fun isOnePaneMode(): Boolean {
+        return binding.shopItemContainer == null
+    }
+
+    private fun launchFragment(fragment: Fragment) {
+        supportFragmentManager.popBackStack()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.shop_item_container, fragment)
+            .addToBackStack(null)
+            .commit()
     }
 
     private fun setupRecyclerView() {
@@ -76,8 +94,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupClickListener() {
         shopListAdapter.onShopItemClickListener = {
-            val intent = newIntentEditItem(this, it.id)
-            startActivity(intent)
+            if (isOnePaneMode()) {
+                val intent = newIntentEditItem(this, it.id)
+                startActivity(intent)
+            } else {
+                launchFragment(ShopItemFragment.newInstanceEditItem(it.id))
+            }
         }
     }
 
