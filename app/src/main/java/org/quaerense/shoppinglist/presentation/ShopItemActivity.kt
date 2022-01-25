@@ -3,18 +3,17 @@ package org.quaerense.shoppinglist.presentation
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import org.quaerense.shoppinglist.R
 import org.quaerense.shoppinglist.databinding.ActivityShopItemBinding
+import org.quaerense.shoppinglist.domain.ShopItem
 import org.quaerense.shoppinglist.domain.ShopItem.Companion.UNDEFINED_ID
 
 class ShopItemActivity : AppCompatActivity() {
     private lateinit var binding: ActivityShopItemBinding
-    private lateinit var viewModel: ShopItemViewModel
 
+    //    private lateinit var viewModel: ShopItemViewModel
+//
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = UNDEFINED_ID
 
@@ -24,77 +23,82 @@ class ShopItemActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         parseIntent()
-        viewModel = ViewModelProvider(this).get(ShopItemViewModel::class.java)
-        addTextChangeListeners()
+//        addTextChangeListeners()
         launchRightMode()
-        observeViewModel()
+//        observeViewModel()
     }
 
-    private fun observeViewModel() {
-        viewModel.errorInputName.observe(this) {
-            val message =
-                if (it) getString(R.string.error_input_name)
-                else null
-            binding.tilName.error = message
-        }
-        viewModel.errorInputCount.observe(this) {
-            val message =
-                if (it) getString(R.string.error_input_count)
-                else null
-            binding.tilCount.error = message
-        }
-        viewModel.shouldCloseScreen.observe(this) {
-            finish()
-        }
-    }
-
+    //    private fun observeViewModel() {
+//        viewModel.errorInputName.observe(this) {
+//            val message =
+//                if (it) getString(R.string.error_input_name)
+//                else null
+//            binding.tilName.error = message
+//        }
+//        viewModel.errorInputCount.observe(this) {
+//            val message =
+//                if (it) getString(R.string.error_input_count)
+//                else null
+//            binding.tilCount.error = message
+//        }
+//        viewModel.shouldCloseScreen.observe(this) {
+//            finish()
+//        }
+//    }
+//
     private fun launchRightMode() {
-        when (screenMode) {
-            MODE_EDIT -> launchEditMode()
-            MODE_ADD -> launchAddMode()
+        val fragment = when (screenMode) {
+            MODE_EDIT -> ShopItemFragment.newInstanceEditItem(shopItemId)
+            MODE_ADD -> ShopItemFragment.newInstanceAddItem()
+            else -> throw RuntimeException("Unknown screen mode $screenMode")
         }
+
+        supportFragmentManager.beginTransaction()
+            .add(R.id.shop_item_container, fragment)
+            .commit()
     }
 
-    private fun addTextChangeListeners() {
-        binding.etName.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) =
-                viewModel.resetErrorInputName()
-
-            override fun afterTextChanged(p0: Editable?) {}
-        })
-        binding.etCount.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) =
-                viewModel.resetErrorInputCount()
-
-            override fun afterTextChanged(p0: Editable?) {}
-        })
-    }
-
-    private fun launchEditMode() {
-        viewModel.getShopItem(shopItemId)
-        viewModel.shopItem.observe(this@ShopItemActivity) {
-            binding.etName.setText(it.name)
-            binding.etCount.setText(it.count.toString())
-        }
-        binding.bSave.setOnClickListener {
-            val name = binding.etName.text.toString()
-            val count = binding.etCount.text.toString()
-            viewModel.editShopItem(name, count)
-        }
-    }
-
-    private fun launchAddMode() {
-        binding.bSave.setOnClickListener {
-            val name = binding.etName.text.toString()
-            val count = binding.etCount.text.toString()
-            viewModel.addShopItem(name, count)
-        }
-    }
-
+    //
+//    private fun addTextChangeListeners() {
+//        binding.etName.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+//
+//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) =
+//                viewModel.resetErrorInputName()
+//
+//            override fun afterTextChanged(p0: Editable?) {}
+//        })
+//        binding.etCount.addTextChangedListener(object : TextWatcher {
+//            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+//
+//            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) =
+//                viewModel.resetErrorInputCount()
+//
+//            override fun afterTextChanged(p0: Editable?) {}
+//        })
+//    }
+//
+//    private fun launchEditMode() {
+//        viewModel.getShopItem(shopItemId)
+//        viewModel.shopItem.observe(this@ShopItemActivity) {
+//            binding.etName.setText(it.name)
+//            binding.etCount.setText(it.count.toString())
+//        }
+//        binding.bSave.setOnClickListener {
+//            val name = binding.etName.text.toString()
+//            val count = binding.etCount.text.toString()
+//            viewModel.editShopItem(name, count)
+//        }
+//    }
+//
+//    private fun launchAddMode() {
+//        binding.bSave.setOnClickListener {
+//            val name = binding.etName.text.toString()
+//            val count = binding.etCount.text.toString()
+//            viewModel.addShopItem(name, count)
+//        }
+//    }
+//
     private fun parseIntent() {
         if (!intent.hasExtra(EXTRA_SCREEN_MODE)) {
             throw RuntimeException("Param screen mode is absent")
@@ -108,9 +112,9 @@ class ShopItemActivity : AppCompatActivity() {
         screenMode = mode
         if (screenMode == MODE_EDIT) {
             if (!intent.hasExtra(EXTRA_SHOP_ITEM_ID)) {
-                throw RuntimeException("Param sho item id is absent")
+                throw RuntimeException("Param shop item id is absent")
             }
-            shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, -1)
+            shopItemId = intent.getIntExtra(EXTRA_SHOP_ITEM_ID, UNDEFINED_ID)
         }
     }
 
