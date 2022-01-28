@@ -1,9 +1,9 @@
 package org.quaerense.shoppinglist.presentation
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,12 +16,21 @@ import org.quaerense.shoppinglist.domain.ShopItem.Companion.UNDEFINED_ID
 class ShopItemFragment : Fragment() {
     private lateinit var binding: FragmentShopItemBinding
     private lateinit var viewModel: ShopItemViewModel
+    private lateinit var onEditingFinishedListener: OnEditingFinishedListener
 
     private var screenMode: String = MODE_UNKNOWN
     private var shopItemId: Int = UNDEFINED_ID
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        if (context is OnEditingFinishedListener) {
+            onEditingFinishedListener = context
+        } else {
+            throw RuntimeException("Activity must implement OnEditingFinishedListener")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("ShopItemFragment", "onCreate")
         super.onCreate(savedInstanceState)
         parseParams()
     }
@@ -57,7 +66,7 @@ class ShopItemFragment : Fragment() {
             binding.tilCount.error = message
         }
         viewModel.shouldCloseScreen.observe(viewLifecycleOwner) {
-            activity?.onBackPressed()
+            onEditingFinishedListener.onEditingFinished()
         }
     }
 
@@ -127,6 +136,10 @@ class ShopItemFragment : Fragment() {
 
             shopItemId = args.getInt(SHOP_ITEM_ID)
         }
+    }
+
+    interface OnEditingFinishedListener {
+        fun onEditingFinished()
     }
 
     companion object {

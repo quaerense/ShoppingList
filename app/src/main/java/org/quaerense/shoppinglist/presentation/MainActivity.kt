@@ -1,6 +1,7 @@
 package org.quaerense.shoppinglist.presentation
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -11,7 +12,7 @@ import org.quaerense.shoppinglist.databinding.ActivityMainBinding
 import org.quaerense.shoppinglist.presentation.ShopItemActivity.Companion.newIntentAddItem
 import org.quaerense.shoppinglist.presentation.ShopItemActivity.Companion.newIntentEditItem
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewModel: MainViewModel
     private lateinit var shopListAdapter: ShopListAdapter
@@ -107,5 +108,10 @@ class MainActivity : AppCompatActivity() {
         shopListAdapter.onShopItemLongClickListener = {
             viewModel.changeEnableState(it)
         }
+    }
+
+    override fun onEditingFinished() {
+        onBackPressed()
+        Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
     }
 }
