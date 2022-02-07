@@ -2,8 +2,12 @@ package org.quaerense.shoppinglist.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import org.quaerense.shoppinglist.R
+import org.quaerense.shoppinglist.databinding.ItemShopDisabledBinding
+import org.quaerense.shoppinglist.databinding.ItemShopEnabledBinding
 import org.quaerense.shoppinglist.domain.ShopItem
 
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()) {
@@ -17,24 +21,33 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
             else -> throw RuntimeException("Unknown view type: $viewType")
         }
 
-        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
+            layout,
+            parent,
+            false
+        )
 
-        return ShopItemViewHolder(view)
+        return ShopItemViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ShopItemViewHolder, position: Int) {
         val item = getItem(position)
+        val binding = holder.binding
 
-        with(holder) {
-            tvName.text = item.name
-            tvCount.text = item.count.toString()
-
-            itemView.setOnClickListener {
-                onShopItemClickListener?.invoke(item)
+        binding.root.setOnClickListener {
+            onShopItemClickListener?.invoke(item)
+        }
+        binding.root.setOnLongClickListener {
+            onShopItemLongClickListener?.invoke(item)
+            true
+        }
+        when (binding) {
+            is ItemShopDisabledBinding -> {
+                binding.shopItem = item
             }
-            itemView.setOnLongClickListener {
-                onShopItemLongClickListener?.invoke(item)
-                true
+            is ItemShopEnabledBinding -> {
+                binding.shopItem = item
             }
         }
     }

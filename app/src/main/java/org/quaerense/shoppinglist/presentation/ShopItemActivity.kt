@@ -6,19 +6,15 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import org.quaerense.shoppinglist.R
-import org.quaerense.shoppinglist.databinding.ActivityShopItemBinding
 import org.quaerense.shoppinglist.domain.ShopItem.Companion.UNDEFINED_ID
 
 class ShopItemActivity : AppCompatActivity(), ShopItemFragment.OnEditingFinishedListener {
-    private lateinit var binding: ActivityShopItemBinding
-
     private var screenMode = MODE_UNKNOWN
     private var shopItemId = UNDEFINED_ID
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityShopItemBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(R.layout.activity_shop_item)
 
         parseIntent()
         if (savedInstanceState == null) {
