@@ -1,7 +1,7 @@
 package org.quaerense.shoppinglist.domain
 
 class GetShopItemUseCase(private val shopListRepository: ShopListRepository) {
-    fun getShopItemById(id: Int): ShopItem {
+    suspend fun getShopItemById(id: Int): ShopItem {
         return shopListRepository.getShopItemById(id)
     }
 }

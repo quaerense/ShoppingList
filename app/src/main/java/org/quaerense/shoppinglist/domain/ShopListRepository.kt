@@ -4,13 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 
 interface ShopListRepository {
-    fun addShopItem(item: ShopItem)
+    suspend fun addShopItem(item: ShopItem)
 
-    fun deleteShopItem(item: ShopItem)
+    suspend fun deleteShopItem(item: ShopItem)
 
-    fun editShopItem(item: ShopItem)
+    suspend fun editShopItem(item: ShopItem)
 
-    fun getShopItemById(id: Int): ShopItem
+    suspend fun getShopItemById(id: Int): ShopItem
 
     fun getShopList(): LiveData<List<ShopItem>>
 }
