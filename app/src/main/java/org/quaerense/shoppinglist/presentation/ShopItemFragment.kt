@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import org.quaerense.shoppinglist.R
 import org.quaerense.shoppinglist.databinding.FragmentShopItemBinding
 import org.quaerense.shoppinglist.domain.ShopItem.Companion.UNDEFINED_ID
 
@@ -49,7 +48,7 @@ class ShopItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ShopItemViewModel::class.java)
+        viewModel = ViewModelProvider(this)[ShopItemViewModel::class.java]
         addTextChangeListeners()
         launchRightMode()
         observeViewModel()
