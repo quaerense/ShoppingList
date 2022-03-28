@@ -1,14 +1,15 @@
 package org.quaerense.shoppinglist.data
 
-import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import org.quaerense.shoppinglist.domain.ShopItem
 import org.quaerense.shoppinglist.domain.ShopListRepository
+import javax.inject.Inject
 
-class ShopListRepositoryImpl(application: Application) : ShopListRepository {
-    private val dao = AppDatabase.getInstance(application).shopItemDao()
-    private val mapper = ShopListMapper()
+class ShopListRepositoryImpl @Inject constructor(
+    private val dao: ShopListDao,
+    private val mapper: ShopListMapper
+) : ShopListRepository {
 
     override suspend fun addShopItem(item: ShopItem) {
         dao.addShopItem(mapper.mapEntityToDbModel(item))

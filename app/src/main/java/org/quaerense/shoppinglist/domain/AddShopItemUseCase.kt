@@ -1,6 +1,10 @@
 package org.quaerense.shoppinglist.domain
 
-class AddShopItemUseCase(private val shopListRepository: ShopListRepository) {
+import javax.inject.Inject
+
+class AddShopItemUseCase @Inject constructor(
+    private val shopListRepository: ShopListRepository
+    ) {
     suspend fun addShopItem(item: ShopItem) {
         shopListRepository.addShopItem(item)
     }
